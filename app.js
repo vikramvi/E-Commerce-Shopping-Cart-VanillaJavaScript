@@ -95,9 +95,38 @@ class UI {
 
                 //get product from products
                 let cartItem = Storage.getProduct(id);
-                console.log(cartItem);
+                //console.log(cartItem);
+
+                cartItem = { ...Storage.getProduct(id), amount: 1 };
+                //console.log(cartItem);
+
+                //add cartItem to cart
+                cart = [...cart, cartItem];
+                //console.log(cart);
+
+                //save cart in local storage
+                Storage.saveCart(cart);
+
+                //set cart values
+                this.setCartValues(cart);
+
+
             });
         })
+    }
+
+    setCartValues(cart) {
+        let tempTotal = 0;
+        let itemsTotal = 0;
+
+        cart.map(item => {
+            tempTotal += item.price * item.amount;
+            itemsTotal += item.amount;
+        });
+
+        cartTotal.innerHTML = parseFloat(tempTotal.toFixed(2));
+        cartItems.innerHTML = itemsTotal;
+        console.log(cartTotal, cartItems);
     }
 }
 
@@ -111,6 +140,10 @@ class Storage {
     static getProduct(id) {
         let products = JSON.parse(localStorage.getItem("products"));
         return products.find(product => product.id === id);
+    }
+
+    static saveCart(cart) {
+        localStorage.setItem("cart", JSON.stringify(cart));
     }
 
 }
