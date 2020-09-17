@@ -158,6 +158,25 @@ class UI {
         cartDOM.classList.add('showCart');
     }
 
+    setupAPP() {
+        //check if local storage has products
+        cart = Storage.getCart();
+        this.setCartValues(cart);
+        this.populateCart(cart);
+
+        cartBtn.addEventListener('click', this.showCart);
+
+        closeCartBtn.addEventListener('click', this.hideCart);
+    }
+
+    populateCart(cart) {
+        cart.forEach(item => this.addCartItem(item));
+    }
+
+    hideCart() {
+        cartOverlay.classList.remove('transparentBcg');
+        cartDOM.classList.remove('showCart');
+    }
 
 }
 
@@ -177,6 +196,9 @@ class Storage {
         localStorage.setItem("cart", JSON.stringify(cart));
     }
 
+    static getCart() {
+        return localStorage.getItem("cart") ? JSON.parse(localStorage.getItem("cart")) : [];
+    }
 }
 
 
@@ -185,6 +207,9 @@ class Storage {
 document.addEventListener("DOMContentLoaded", () => {
     const ui = new UI();
     const products = new Products();
+
+    //setup app
+    ui.setupAPP();
 
     //get all products & show on the screen
     products.getProducts().then(products => {
