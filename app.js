@@ -15,6 +15,11 @@ const productsDOM = document.querySelector(".products-center");
 
 //cart
 let cart = [];
+//buttons
+let buttonsDOM = [];
+
+
+//---- Classes and methods
 
 //getting the products
 class Products {
@@ -23,7 +28,7 @@ class Products {
             let result = await fetch('products.json');
             let data = await result.json();
 
-            console.log(data);
+            //console.log(data);
 
             const products = data.items.map((item) => {
                 const { title, price } = item.fields;
@@ -42,7 +47,7 @@ class Products {
 //display products
 class UI {
     displayProducts(products) {
-        console.log(products);
+        //console.log(products);
 
         let result = "";
         products.forEach(product => {
@@ -64,14 +69,54 @@ class UI {
         productsDOM.innerHTML = result;
 
     }
+
+    getBagButtons() {
+        //spread operator to create array
+        const buttons = [...document.querySelectorAll(".bag-btn")];
+        //console.log(buttons);
+
+        buttonsDOM = buttons;
+
+        buttons.forEach(button => {
+            let id = button.dataset.id;
+
+            //check if item is already in the cart array
+            let inCart = cart.find(item => item.id === id);
+
+            //change button text based on cart status
+            if (inCart) {
+                button.innerHTML = "In Cart";
+                button.disabled = true;
+            }
+
+            button.addEventListener("click", event => {
+                event.target.innerHTML = "In Cart";
+                event.target.disabled = true;
+
+                //get product from products
+                let cartItem = Storage.getProduct(id);
+                console.log(cartItem);
+            });
+        })
+    }
 }
 
 //local storage
 class Storage {
+
     static saveProducts(products) {
         localStorage.setItem("products", JSON.stringify(products));
     }
+
+    static getProduct(id) {
+        let products = JSON.parse(localStorage.getItem("products"));
+        return products.find(product => product.id === id);
+    }
+
 }
+
+
+//----- Global Event listener
 
 document.addEventListener("DOMContentLoaded", () => {
     const ui = new UI();
@@ -85,6 +130,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         //store products locally
         Storage.saveProducts(products);
+    }).then(() => {
+        ui.getBagButtons();
     });
 
 });
