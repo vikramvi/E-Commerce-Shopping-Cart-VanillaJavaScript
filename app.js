@@ -186,6 +186,32 @@ class UI {
         clearCartBtn.addEventListener('click', () => {
             this.clearCart();
         })
+
+
+        //Cart functionality
+        cartContent.addEventListener('click', (event) => {
+            if (event.target.classList.contains("remove-item")) {
+                let removeItem = event.target;
+                let id = removeItem.dataset.id;
+
+                //remove from DOM
+                cartContent.removeChild(removeItem.parentElement.parentElement);
+
+                //remove from local storage
+                this.removeItem(id);
+            } else if (event.target.classList.contains("fa-chevron-up")) {
+                let addAmount = event.target;
+                let id = addAmount.dataset.id;
+
+                let tempItem = cart.find(item => item.id === id);
+                tempItem.amount = tempItem.amount + 1;
+
+                Storage.saveCart(cart);
+                this.setCartValues(cart);
+
+                addAmount.nextElementSibling.innerText = tempItem.amount;
+            }
+        });
     }
 
     clearCart() {
